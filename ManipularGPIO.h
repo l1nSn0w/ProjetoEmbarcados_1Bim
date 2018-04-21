@@ -1,13 +1,9 @@
 #ifndef _MANIPULAR_GPIO_
 #define _MANIPULAR_GPIO_
 
-
-#define F_CPU 16000000
-#define CiclosClockPorMicroSegundo () ( F_CPU / 1000000 )
-#define CiclosClockPorMiliSegundo () ( F_CPU / 1000 )
-
 #define INPUT 0
 #define OUTPUT 1
+
 #define LOW 0
 #define HIGH 1
 
@@ -79,7 +75,7 @@
 #define PF6 6
 #define PF7 7
 
-#define Ler_BIT(registrador, bit) (((registrador) >> (bit)) & 0x01)
+#define Ler_BIT(registrador, bit)  (((registrador) >> (bit)) & 0x01)
 #define Setar_BIT(registrador, bit) ((registrador) |= (1 << (bit)))
 #define Limpar_BIT(registrador, bit) ((registrador) &= ~(1 << (bit)))
 #define Escrever_BIT(registrador, bit, valorBit) (valorBit ? Setar_BIT(registrador, bit) : Limpar_BIT(registrador, bit))
@@ -98,7 +94,8 @@ void DesativarPort(int port)
 void ConfigurarPino(uint32_t *port_dir, uint32_t *port_den, int pino, int modo)
 {
    Escrever_BIT(*(port_dir), pino, modo);
-   Escrever_BIT(*(port_den), pino, modo);
+
+   Escrever_BIT(*(port_den), pino, 1);
 }
 
 int LerPino(uint32_t *registrador, uint32_t pino)
@@ -111,7 +108,7 @@ void SetarPino(uint32_t *registrador, uint32_t pino, uint32_t valor)
     Escrever_BIT(*(registrador), pino, valor);
 }
 
-uint32_t tempoSystick = 24; //Equivalente a 6us
+uint32_t tempoSystick = 24; //Equivalente a 250us
 uint32_t sysTickMillis = 0;
 uint32_t sysTickMicros = 0;
 
@@ -147,5 +144,11 @@ void delay(uint32_t ms)
     while (millis() - inicio <= ms) ;
 }
 
+void delay_ms(uint32_t ms)
+{
+    uint64_t inicio = micros();
+
+    while (micros() - inicio <= ms) ;
+}
 
 #endif
